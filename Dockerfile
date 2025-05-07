@@ -1,16 +1,18 @@
-# docker build -t mosazhaw/node-web-app .
-
-FROM node:22.15.0
+# Use official Node.js image
+FROM node:22.1.0
 
 # Create app directory
 WORKDIR /usr/src/app
 
-# Copy app
-COPY . .
-
-# Install
+# Copy package files and install dependencies
+COPY package*.json ./
 RUN npm install
 
-# Docker Run Command
+# Copy application files
+COPY . .
+
+# Expose the port the app runs on
 EXPOSE 3000
-CMD [ "node", "server.js" ]
+
+# Start the app
+CMD ["node", "server.js"]
