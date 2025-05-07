@@ -2,14 +2,15 @@ pipeline {
     agent any
 
     stages {
-        stage('Docker Push') {
+        stage('Docker Build & Push') {
             steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'DockerHub-mosazhaw', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                dir('backend') {
+                    withCredentials([usernamePassword(credentialsId: 'DockerHubCred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         sh '''
                             export DOCKER_HOST=tcp://host.docker.internal:2375
-                            docker login -u $USERNAME -p $PASSWORD
-                            docker push mosazhaw/node-web-app
+                            docker build -f docker.dockerfile -t michaelmisa/node-web-app:latest .
+                            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                            docker push michaelmisa/node-web-app:latest
                         '''
                     }
                 }
